@@ -1,7 +1,7 @@
 # Nort TV
 
 A fullscreen TV UI for Linux. Runs on Ubuntu Server, Debian, Raspberry Pi OS Lite, and Arch Linux. Boots straight to a big-screen interface — no desktop environment needed.
-
+![](https://raw.githubusercontent.com/Stradios/Nort-TV/refs/heads/main/Pasted%20image.png)
 ## What it does right now
 
 - Fullscreen background (Watchtower wallpaper) with live clock
