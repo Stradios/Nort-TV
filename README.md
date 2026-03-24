@@ -27,6 +27,7 @@ On reboot: auto-login → X starts → Chromium launches fullscreen → your UI 
 ## Uninstall (clean slate for testing)
 
 ```bash
+cd Nort-TV
 sudo bash uninstall.sh
 sudo reboot
 ```
