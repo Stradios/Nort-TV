@@ -1,0 +1,29 @@
+[Unit]
+Description=Nort TV UI
+After=network-online.target graphical.target
+Wants=network-online.target
+
+[Service]
+User=%i
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/%i/.Xauthority
+Environment=XDG_RUNTIME_DIR=/run/user/1000
+
+# Start a minimal Wayland compositor then launch Chromium in kiosk mode
+ExecStartPre=/bin/sleep 3
+ExecStart=/usr/bin/chromium-browser \
+  --kiosk \
+  --noerrdialogs \
+  --disable-infobars \
+  --no-first-run \
+  --disable-translate \
+  --disable-features=TranslateUI \
+  --disable-session-crashed-bubble \
+  --check-for-update-interval=31536000 \
+  --app=file:///opt/nort-tv/index.html
+
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=graphical.target
