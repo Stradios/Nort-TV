@@ -1,71 +1,96 @@
 # Nort TV
 
-A minimal fullscreen TV UI — currently shows your background wallpaper and a clock.
-Built to run on Ubuntu Server, Debian, Raspberry Pi OS Lite, or Arch Linux.
+A fullscreen TV UI for Linux — built to run on Ubuntu Server, Debian, Raspberry Pi OS Lite, or Arch Linux. Currently shows your Watchtower background with a live clock. More features coming.
 
-## What this does right now
-- Boots straight to a fullscreen background (your Watchtower image)
-- Shows a live clock and date in the bottom-left corner
-- Hides the mouse cursor automatically
-- Survives reboots — starts automatically via systemd
-- SSH still works — the server is untouched underneath
+## What it does right now
 
-## Install on Ubuntu Server
+- Boots straight to a fullscreen background (Watchtower image)
+- Live clock and date — bottom left corner
+- Mouse cursor hidden automatically
+- Survives reboots — starts via systemd on every boot
+- SSH still works — nothing on your server is touched
+
+## Install
 
 ```bash
-# 1. Copy this folder to your machine (USB, git clone, scp, etc.)
-git clone https://github.com/YOUR_USERNAME/nort-tv
+# Clone the repo
+git clone https://github.com/Stradios/Nort-TV
+cd Nort-TV
 
-# 2. Run the installer as root
-cd nort-tv
-sudo bash scripts/install.sh
+# Run the installer as root
+sudo bash install.sh
 
-# 3. Reboot
+# Reboot — the UI appears fullscreen automatically
 sudo reboot
 ```
 
-That's it. On reboot the machine logs in automatically and launches the UI fullscreen.
+That's it. The installer handles everything: packages, autostart, auto-login, Chromium kiosk setup.
 
 ## File structure
 
 ```
-nort-tv/
-├── index.html          ← The actual UI (edit this to change the interface)
-├── scripts/
-│   ├── install.sh      ← One-shot installer for Ubuntu/Debian/Pi OS
-│   └── nort-tv@.service ← Systemd service file
+Nort-TV/
+├── index.html         ← The UI — edit this to change anything
+├── install.sh         ← One-shot installer for Ubuntu/Debian/Pi OS/Arch
+├── nort-tv@.service   ← Systemd service (install.sh uses this automatically)
 └── README.md
 ```
 
-## Changing the background
+## Updating the UI
 
-Edit `index.html` and find this line:
+After editing `index.html` locally, push to GitHub and pull on your machine:
 
-```css
-background-image: url('YOUR_IMAGE_URL_HERE');
+```bash
+# On your Ubuntu/Pi machine:
+cd Nort-TV
+git pull
+sudo cp index.html /opt/nort-tv/index.html
+sudo systemctl restart nort-tv@$USER
 ```
 
-Replace the URL with any image URL or a local file path like `file:///opt/nort-tv/bg.jpg`.
-Then copy the new `index.html` to `/opt/nort-tv/index.html` and refresh.
+Or just copy the file directly if you're editing on the machine itself:
+
+```bash
+sudo cp index.html /opt/nort-tv/index.html
+sudo systemctl restart nort-tv@$USER
+```
 
 ## Useful commands
 
 ```bash
-# Check if the service is running
-sudo systemctl status nort-tv@YOUR_USERNAME
+# Check status
+sudo systemctl status nort-tv@$USER
 
-# Restart the UI (if you updated index.html)
-sudo systemctl restart nort-tv@YOUR_USERNAME
+# Restart after a change
+sudo systemctl restart nort-tv@$USER
 
-# Stop the UI (returns to normal terminal)
-sudo systemctl stop nort-tv@YOUR_USERNAME
+# Stop (returns to terminal)
+sudo systemctl stop nort-tv@$USER
 
-# View logs if something goes wrong
-journalctl -u nort-tv@YOUR_USERNAME -f
+# View live logs
+journalctl -u nort-tv@$USER -f
 ```
 
+## Changing the background
+
+Open `index.html` and find this line near the top:
+
+```css
+background-image: url('https://raw.githubusercontent.com/...');
+```
+
+Replace with any image URL, or a local file:
+
+```css
+background-image: url('file:///opt/nort-tv/bg.jpg');
+```
+
+Then copy the updated file and restart as shown above.
+
 ## Coming next
-- App launcher grid
-- Browser mode with ad blocking
+
+- App launcher grid (D-pad navigable)
+- Browser mode with built-in ad blocking
 - Settings panel
-- Gamepad / remote control navigation
+- Gamepad / TV remote / HDMI-CEC support
+- Background picker in the UI
