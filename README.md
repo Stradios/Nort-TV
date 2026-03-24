@@ -1,96 +1,92 @@
 # Nort TV
 
-A fullscreen TV UI for Linux — built to run on Ubuntu Server, Debian, Raspberry Pi OS Lite, or Arch Linux. Currently shows your Watchtower background with a live clock. More features coming.
+A fullscreen TV UI for Linux. Runs on Ubuntu Server, Debian, Raspberry Pi OS Lite, and Arch Linux. Boots straight to a big-screen interface — no desktop environment needed.
 
 ## What it does right now
 
-- Boots straight to a fullscreen background (Watchtower image)
-- Live clock and date — bottom left corner
-- Mouse cursor hidden automatically
-- Survives reboots — starts via systemd on every boot
-- SSH still works — nothing on your server is touched
+- Fullscreen background (Watchtower wallpaper) with live clock
+- **Web Apps** — add any website as an app card; pulls favicon + name automatically; edit or delete anytime
+- **Linux Apps** — Flathub pinned as default; add more app slots
+- **Settings** — Display, Network, Sound, Wallpaper, Remote & Input, System (panels coming)
+- D-pad / arrow key navigation between all cards
+- Gamepad support (browser Gamepad API — plug in any controller)
+- All added web apps persist across reboots (localStorage)
+- SSH keeps working — nothing else on the system is touched
 
 ## Install
 
 ```bash
-# Clone the repo
 git clone https://github.com/Stradios/Nort-TV
 cd Nort-TV
-
-# Run the installer as root
 sudo bash install.sh
-
-# Reboot — the UI appears fullscreen automatically
 sudo reboot
 ```
 
-That's it. The installer handles everything: packages, autostart, auto-login, Chromium kiosk setup.
+On reboot: auto-login → X starts → Chromium launches fullscreen → your UI appears.
 
-## File structure
-
-```
-Nort-TV/
-├── index.html         ← The UI — edit this to change anything
-├── install.sh         ← One-shot installer for Ubuntu/Debian/Pi OS/Arch
-├── nort-tv@.service   ← Systemd service (install.sh uses this automatically)
-└── README.md
-```
-
-## Updating the UI
-
-After editing `index.html` locally, push to GitHub and pull on your machine:
+## Uninstall (clean slate for testing)
 
 ```bash
-# On your Ubuntu/Pi machine:
-cd Nort-TV
+sudo bash uninstall.sh
+sudo reboot
+```
+
+Removes everything: systemd service, auto-login, openbox config, startx in .bash_profile, and /opt/nort-tv. Your SSH and all other services keep running.
+
+## Update the UI after making changes
+
+```bash
 git pull
 sudo cp index.html /opt/nort-tv/index.html
 sudo systemctl restart nort-tv@$USER
 ```
 
-Or just copy the file directly if you're editing on the machine itself:
+## File structure
 
-```bash
-sudo cp index.html /opt/nort-tv/index.html
-sudo systemctl restart nort-tv@$USER
+```
+Nort-TV/
+├── index.html           ← The entire UI — edit this to change anything
+├── install.sh           ← One-shot installer (Ubuntu / Debian / Pi OS / Arch)
+├── uninstall.sh         ← Removes everything for clean testing
+├── nort-tv@.service     ← Systemd service template (used by install.sh)
+└── README.md
 ```
 
 ## Useful commands
 
 ```bash
-# Check status
+# Check if running
 sudo systemctl status nort-tv@$USER
 
-# Restart after a change
+# Restart after a UI change
 sudo systemctl restart nort-tv@$USER
 
-# Stop (returns to terminal)
+# Stop (returns to terminal — SSH still works)
 sudo systemctl stop nort-tv@$USER
 
-# View live logs
+# Watch live logs
 journalctl -u nort-tv@$USER -f
 ```
 
 ## Changing the background
 
-Open `index.html` and find this line near the top:
+Open `index.html` and find:
 
-```css
-background-image: url('https://raw.githubusercontent.com/...');
+```js
+const bgSrc = 'https://raw.githubusercontent.com/...';
 ```
 
-Replace with any image URL, or a local file:
+Replace with any image URL or a local path:
 
-```css
-background-image: url('file:///opt/nort-tv/bg.jpg');
+```js
+const bgSrc = 'file:///opt/nort-tv/bg.jpg';
 ```
 
-Then copy the updated file and restart as shown above.
+Then copy and restart as above.
 
 ## Coming next
 
-- App launcher grid (D-pad navigable)
-- Browser mode with built-in ad blocking
-- Settings panel
-- Gamepad / TV remote / HDMI-CEC support
-- Background picker in the UI
+- Browser overlay mode (open web apps fullscreen with back button)
+- Settings panels (wallpaper picker, network info, display options)
+- Ad blocking built into browser mode
+- HDMI-CEC / TV remote support
